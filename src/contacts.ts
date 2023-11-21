@@ -62,19 +62,23 @@ function set(contacts: Contact[]) {
 }
 
 // fake a cache so we don't slow down stuff we've already seen
-let fakeCache = {};
+let fakeCache: Record<string, boolean> = {};
 
-async function fakeNetwork(key?: string) {
+async function fakeNetwork(key?: string): Promise<void | undefined> {
   if (!key) {
     fakeCache = {};
+    return;
   }
 
   if (fakeCache[key]) {
     return;
   }
+  // if (key in fakeCache) {
+  //   return;
+  // }
 
   fakeCache[key] = true;
-  return new Promise((res) => {
+  return new Promise<void>((res) => {
     setTimeout(res, Math.random() * 800);
   });
 }
