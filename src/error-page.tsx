@@ -1,5 +1,6 @@
 import { useRouteError, isRouteErrorResponse } from "react-router-dom";
 
+// fixme: [What's the correct type for error in useRouteError() from react-router-dom?](https://stackoverflow.com/questions/75944820/whats-the-correct-type-for-error-in-userouteerror-from-react-router-dom)
 export default function ErrorPage() {
   const error = useRouteError();
   let errorMessage: string
