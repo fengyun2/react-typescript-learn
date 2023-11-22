@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import contactsRouters from './course01/contacts/router';
+import course02Routers from './course02/query-page/router';
 // import Root, { loader as rootLoader, action as rootAction } from './course01/contacts/root';
 // import ErrorPage from './error-page';
 // import Index from './course01/contacts/index';
@@ -9,6 +10,7 @@ import contactsRouters from './course01/contacts/router';
 
 const router = createBrowserRouter([
   ...contactsRouters,
+  ...course02Routers,
   // {
   //   path: '/',
   //   element: <Root />,
