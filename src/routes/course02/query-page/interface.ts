@@ -19,3 +19,12 @@ export interface TableParams {
   sortOrder?: string;
   filters?: Record<string, FilterValue>;
 }
+
+export interface ResponseData {
+  results: DataType[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  success?: boolean;
+  message?: string;
+}
