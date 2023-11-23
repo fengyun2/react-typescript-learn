@@ -26,8 +26,9 @@ function TodoList() {
           return (
             <li key={index}>
               <Space style={{ display: 'flex', alignItems: 'center' }}>
-                <Text strong={todo.completed}>{todo.text}</Text>
-                <Checkbox checked={todo.completed} onChange={() => toggleTodo(index)} />
+                <Checkbox checked={todo.completed} onChange={() => toggleTodo(index)}>
+                  <Text strong={todo.completed}>{todo.text}</Text>
+                </Checkbox>
                 <Button
                   type='link'
                   danger
