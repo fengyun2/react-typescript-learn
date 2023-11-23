@@ -52,11 +52,7 @@ const App: React.FC = () => {
     fetchData();
   }, [JSON.stringify(tableParams)]);
 
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    filters: Record<string, FilterValue>,
-    sorter: SorterResult<DataType>
-  ) => {
+  const handleTableChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter) => {
     setTableParams({
       pagination,
       ...filters,

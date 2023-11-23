@@ -31,62 +31,17 @@ const QueryFilter = (props: IProps) => {
     padding: 24,
   };
 
-  // const getFields = () => {
-  //   const count = expand ? 10 : 6;
-  //   const children = [];
-  //   for (let i = 0; i < count; i++) {
-  //     children.push(
-  //       <Col span={8} key={i}>
-  //         {i % 3 !== 1 ? (
-  //           <Form.Item
-  //             name={`field-${i}`}
-  //             label={`Field ${i}`}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: 'Input something!',
-  //               },
-  //             ]}
-  //           >
-  //             <Input placeholder='placeholder' />
-  //           </Form.Item>
-  //         ) : (
-  //           <Form.Item
-  //             name={`field-${i}`}
-  //             label={`Field ${i}`}
-  //             rules={[
-  //               {
-  //                 required: true,
-  //                 message: 'Select something!',
-  //               },
-  //             ]}
-  //             initialValue='1'
-  //           >
-  //             <Select>
-  //               <Option value='1'>
-  //                 longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong
-  //               </Option>
-  //               <Option value='2'>222</Option>
-  //             </Select>
-  //           </Form.Item>
-  //         )}
-  //       </Col>
-  //     );
-  //   }
-  //   return children;
-  // };
-
   const getFields = () => {
     const children = [];
     children.push(
-      <Col span={8}>
+      <Col span={8} key={'gender'}>
         <Form.Item name='gender' label='性别'>
           <Select options={GenderList} placeholder='请选择性别' />
         </Form.Item>
       </Col>
     );
     children.push(
-      <Col span={8}>
+      <Col span={8} key={'password'}>
         <Form.Item name='password' label='密码'>
           <Input placeholder='请输入密码' />
         </Form.Item>
