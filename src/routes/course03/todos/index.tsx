@@ -1,5 +1,5 @@
 import { Flex } from 'antd';
-import TodoList from './Todolist';
+import TodoList from './TodoList';
 import { AppStateProvider } from './AppStateContext';
 
 const App = () => {
