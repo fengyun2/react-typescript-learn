@@ -1,4 +1,4 @@
-import ErrorPage from '../../error-page';
+import ErrorPage from '@routes/error-page';
 import Index from './index';
 import Detail from './detail';
 
