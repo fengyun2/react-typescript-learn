@@ -1,8 +1,9 @@
 import { EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
-import type { ActionType, ProColumns } from '@ant-design/pro-components';
+import type { ActionType, ProColumns, ProFormInstance } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag, Select } from 'antd';
+import { Button, Dropdown, Space, Tag } from 'antd';
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const waitTimePromise = async (time: number = 100) => {
   return new Promise((resolve) => {
@@ -39,139 +40,152 @@ type GithubIssueItem = {
   closed_at?: string;
 };
 
-const columns: ProColumns<GithubIssueItem>[] = [
-  {
-    title: '序号',
-    dataIndex: 'index',
-    valueType: 'indexBorder',
-    width: 48,
-  },
-  {
-    title: '标题',
-    dataIndex: 'title',
-    copyable: true,
-    ellipsis: true,
-    tooltip: '标题过长会自动收缩',
-    formItemProps: {
-      rules: [
-        {
-          required: true,
-          message: '此项为必填项',
-        },
-      ],
-    },
-  },
-  {
-    disable: true,
-    title: '状态',
-    dataIndex: 'state',
-    filters: true,
-    onFilter: true,
-    ellipsis: true,
-    valueType: 'select',
-    valueEnum: {
-      all: { text: '全部', status: 'Default' },
-      open: {
-        text: '未解决',
-        status: 'Error',
-      },
-      closed: {
-        text: '已解决',
-        status: 'Success',
-        disabled: true,
-      },
-      processing: {
-        text: '解决中',
-        status: 'Processing',
-      },
-    },
-  },
-  {
-    disable: true,
-    title: '标签',
-    dataIndex: 'labels',
-    search: false,
-    renderFormItem: (_, { defaultRender, onSelect }, form) => {
-      // console.warn(_, form, 'labels defaultRender ======>');
-
-      return defaultRender(_);
-    },
-    valueType: 'select',
-    fieldProps: {
-      options: LabelsOptions,
-      onChange: (value) => {
-        // TODO: 如何设置 value 到 form 里面去
-        console.warn('labels onChange ======>', value);
-      },
-    },
-    render: (_, record) => {
-      return (
-        <Space>
-          {record.labels.map((item) => (
-            <Tag color={item.color} key={item.name}>
-              {item.name}
-            </Tag>
-          ))}
-        </Space>
-      );
-    },
-  },
-  {
-    title: '创建时间',
-    key: 'showTime',
-    dataIndex: 'created_at',
-    valueType: 'date',
-    sorter: true,
-    search: false,
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'created_at',
-    valueType: 'dateRange',
-    hideInTable: true,
-    search: {
-      transform: (value) => {
-        return {
-          startTime: value[0],
-          endTime: value[1],
-        };
-      },
-    },
-  },
-  {
-    title: '操作',
-    dataIndex: 'option',
-    valueType: 'option',
-    render: (text, record, _, action) => [
-      <a
-        key='editable'
-        onClick={() => {
-          console.log('edit', record);
-          action?.startEditable?.(record.id);
-        }}
-      >
-        编辑
-      </a>,
-      <a href={record.url} target='_blank' rel='noopener noreferrer' key='view'>
-        查看
-      </a>,
-      <TableDropdown
-        key='actionGroup'
-        onSelect={() => {
-          console.log('select', record);
-          action?.reload?.();
-        }}
-        menus={[
-          { key: 'copy', name: '复制' },
-          { key: 'remove', name: '删除' },
-        ]}
-      />,
-    ],
-  },
-];
-
 const UserList = () => {
   const actionRef = useRef<ActionType>();
+  const formRef = useRef<ProFormInstance>();
+  const navigate = useNavigate();
+  const searchParams = useRef({});
+
+  const columns: ProColumns<GithubIssueItem>[] = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      valueType: 'indexBorder',
+      width: 48,
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      copyable: true,
+      ellipsis: true,
+      tooltip: '标题过长会自动收缩',
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: '此项为必填项',
+          },
+        ],
+      },
+    },
+    {
+      disable: true,
+      title: '状态',
+      dataIndex: 'state',
+      filters: true,
+      onFilter: true,
+      ellipsis: true,
+      valueType: 'select',
+      valueEnum: {
+        all: { text: '全部', status: 'Default' },
+        open: {
+          text: '未解决',
+          status: 'Error',
+        },
+        closed: {
+          text: '已解决',
+          status: 'Success',
+          disabled: true,
+        },
+        processing: {
+          text: '解决中',
+          status: 'Processing',
+        },
+      },
+    },
+    {
+      disable: true,
+      title: '标签',
+      dataIndex: 'labels',
+      search: false,
+      renderFormItem: (_, { defaultRender, onSelect }, form) => {
+        // console.warn(_, form, 'labels defaultRender ======>');
+
+        return defaultRender(_);
+      },
+      valueType: 'select',
+      fieldProps: {
+        options: LabelsOptions,
+        onChange: (value) => {
+          // TODO: 如何设置 value 到 form 里面去
+          console.warn('labels onChange ======>', value);
+        },
+      },
+      render: (_, record) => {
+        return (
+          <Space>
+            {record.labels.map((item) => (
+              <Tag color={item.color} key={item.name}>
+                {item.name}
+              </Tag>
+            ))}
+          </Space>
+        );
+      },
+    },
+    {
+      title: '创建时间',
+      key: 'showTime',
+      dataIndex: 'created_at',
+      valueType: 'date',
+      sorter: true,
+      search: false,
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'created_at',
+      valueType: 'dateRange',
+      hideInTable: true,
+      search: {
+        transform: (value) => {
+          return {
+            startTime: value[0],
+            endTime: value[1],
+          };
+        },
+      },
+    },
+    {
+      title: '操作',
+      dataIndex: 'option',
+      valueType: 'option',
+      render: (text, record, _, action) => [
+        <a
+          key='editable'
+          onClick={() => {
+            console.log('edit', record, formRef?.current?.getFieldsValue());
+            action?.startEditable?.(record.id);
+          }}
+        >
+          编辑
+        </a>,
+        // <a href={record.url} target='_blank' rel='noopener noreferrer' key='view'>
+        //   查看
+        // </a>,
+        <a
+          key='view'
+          onClick={() => {
+            console.log('view', record);
+            navigate(`/user/${record.id}?` + new URLSearchParams(searchParams.current));
+          }}
+        >
+          查看
+        </a>,
+        <TableDropdown
+          key='actionGroup'
+          onSelect={() => {
+            console.log('select', record);
+            action?.reload?.();
+          }}
+          menus={[
+            { key: 'copy', name: '复制' },
+            { key: 'remove', name: '删除' },
+          ]}
+        />,
+      ],
+    },
+  ];
+
   return (
     <ProTable<GithubIssueItem>
       headerTitle='高级表格'
@@ -195,7 +209,7 @@ const UserList = () => {
         persistenceKey: 'i-user-list',
         persistenceType: 'localStorage',
         onChange: (value) => {
-          console.warn('columnsState', value);
+          console.log('columnsState', value);
         },
       }}
       pagination={{
@@ -203,9 +217,10 @@ const UserList = () => {
         showSizeChanger: true,
         // pageSize: 10,
         onChange: (page) => {
-          console.warn('pageChange: ', page);
+          console.log('pageChange: ', page);
         },
       }}
+      formRef={formRef}
       form={{
         // 由于配置了 transform，提交的参与与定义的不同这里需要转化一下
         syncToUrl: (values, type) => {
@@ -238,6 +253,7 @@ const UserList = () => {
         </Dropdown>,
       ]}
       request={async (params, sort, filter) => {
+        searchParams.current = params;
         console.log(sort, filter);
         await waitTime(2000);
         const result = await fetch(
