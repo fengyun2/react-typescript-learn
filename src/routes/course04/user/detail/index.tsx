@@ -1,7 +1,15 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-components';
-import { ProCard, ProForm, ProFormText, ProFormSelect, ProFormDatePicker } from '@ant-design/pro-components';
+import {
+  ProCard,
+  ProForm,
+  ProFormText,
+  ProFormTextArea,
+  ProFormSelect,
+  ProFormDatePicker,
+  ProFormRadio,
+} from '@ant-design/pro-components';
 import { useRef } from 'react';
 import moment from 'dayjs';
 
@@ -79,16 +87,23 @@ const Detail = () => {
   const current = searchParams.get('current') || undefined;
   const pageSize = searchParams.get('pageSize') || undefined;
   const [issue, setIssue] = useState<GithubIssueFormData>();
+  // 表单 label 固定宽度
+  const labelWidth = 100;
+  const wrapperWidth = `calc(100% - ${labelWidth})`;
 
   return (
     <div>
       <h2>Detail</h2>
       <ProCard title='基础信息' bordered={false} headerBordered>
         <ProForm<GithubIssueFormData>
+          name='issue-base-form'
+          submitter={false}
+          layout='horizontal'
           grid
-          rowProps={{
-            gutter: [16, 0],
-          }}
+          labelCol={{ style: { width: labelWidth } }}
+          wrapperCol={{ style: { width: wrapperWidth } }}
+          colProps={{ sm: 12, md: 8 }}
+          labelWrap={true}
           onFinish={async (values) => {
             await waitTime(500);
             console.log(values);
@@ -113,9 +128,8 @@ const Detail = () => {
             return data;
           }}
         >
-          <ProFormText colProps={{ sm: 12, md: 8, xl: 8 }} name='title' label='标题' />
+          <ProFormTextArea name='title' label='标题' colProps={{ span: 24 }} />
           <ProFormSelect
-            colProps={{ sm: 12, md: 8, xl: 8 }}
             name='state'
             label='状态'
             showSearch
@@ -123,7 +137,6 @@ const Detail = () => {
             request={async () => IssueStateOptions}
           />
           <ProFormSelect
-            colProps={{ sm: 12, md: 8, xl: 8 }}
             name='labels'
             label='标签'
             // mode='multiple'
@@ -148,8 +161,23 @@ const Detail = () => {
               };
             }}
           />
+          <ProFormRadio.Group
+            name='locked'
+            label='锁定'
+            // options={[
+            //   { label: '否', value: 'false' },
+            //   { label: '是', value: 'true' },
+            // ]}
+            valueEnum={
+              new Map([
+                [true, '是'],
+                [false, '否'],
+              ])
+            }
+          />
+          <ProFormText readonly name='comments' label='评论数' />
           <ProFormDatePicker
-            colProps={{ sm: 12, md: 8, xl: 8 }}
+            readonly
             name='created_at'
             label='创建时间'
             transform={(value) => {
@@ -158,6 +186,17 @@ const Detail = () => {
               };
             }}
           />
+          <ProFormDatePicker
+            readonly
+            name='updated_at'
+            label='最后更新时间'
+            transform={(value) => {
+              return {
+                date: moment(value).format('YYYY-MM-DD'),
+              };
+            }}
+          />
+          <ProFormText readonly name='user' label='创建人' />
         </ProForm>
       </ProCard>
       <ProCard title='详情' bordered={false} headerBordered>
