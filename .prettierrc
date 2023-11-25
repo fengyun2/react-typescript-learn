@@ -6,5 +6,8 @@
   "jsxSingleQuote": true,
   "useTabs": false,
   "printWidth": 120,
+  "endOfLine": "auto",
+  "proseWrap": "preserve",
+  "htmlWhitespaceSensitivity": "css",
   "plugins": []
 }
