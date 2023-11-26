@@ -15,6 +15,7 @@ import React, { useRef, useState } from 'react';
 import { Button, Form, Space, Tag, Popconfirm, message } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'dayjs';
+import TagList from './TagList';
 
 /**
  * 1. 子路由形式携带参数（如：/detail/:id）,使用 useParams获取
@@ -43,6 +44,7 @@ interface GithubIssueItem {
   created_at?: string;
   updated_at?: string;
   closed_at?: string;
+  newLabels?: { value: string; label: string }[];
 }
 
 interface GithubIssueFormData extends Omit<GithubIssueItem, 'labels'> {
@@ -189,6 +191,15 @@ const Detail = () => {
       key: 'created_at',
       dataIndex: 'created_at',
       valueType: 'date',
+    },
+    {
+      title: '新标签',
+      key: 'newLabels',
+      dataIndex: 'newLabels',
+      renderFormItem: () => <TagList />,
+      render: (_, record) => {
+        return record?.newLabels?.map?.((item) => <Tag key={item.value}>{item.label}</Tag>);
+      },
     },
     {
       title: '操作',
