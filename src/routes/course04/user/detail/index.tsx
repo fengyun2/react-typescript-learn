@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import type { ActionType, ProFormInstance, ProColumns, EditableFormInstance } from '@ant-design/pro-components';
+import type { ActionType, ProFormInstance, ProColumns } from '@ant-design/pro-components';
 import {
   ProCard,
   ProForm,
@@ -12,6 +12,7 @@ import {
 } from '@ant-design/pro-components';
 import React, { useRef, useState } from 'react';
 import { Button, Form, Space, Tag, Popconfirm, message } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'dayjs';
 
 /**
@@ -29,7 +30,7 @@ import moment from 'dayjs';
 
 interface GithubIssueItem {
   url?: string;
-  id: number;
+  id: string;
   number?: number;
   title?: string;
   labels?: {
@@ -41,10 +42,6 @@ interface GithubIssueItem {
   created_at?: string;
   updated_at?: string;
   closed_at?: string;
-}
-
-interface GithubIssueTable {
-  table: GithubIssueItem[];
 }
 
 interface GithubIssueFormData extends Omit<GithubIssueItem, 'labels'> {
@@ -69,6 +66,13 @@ const IssueLabelsOptions = [
   { label: '进行中', value: 'In Progress' },
   { label: '依赖包', value: 'dependencies' },
 ];
+
+// const LabelsApiMapOptions = [
+//   { name: 'bug', color: 'error' },
+//   { name: 'question', color: 'success' },
+//   { name: 'In Progress', color: 'processing' },
+//   { name: 'dependencies', color: 'default' },
+// ];
 
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
@@ -96,6 +100,16 @@ const Detail = () => {
   const labelWidth = 100;
   const wrapperWidth = `calc(100% - ${labelWidth})`;
 
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() => []);
   const actionRef = useRef<ActionType>();
   // const editableFormRef = useRef<EditableFormInstance>();
@@ -123,7 +137,6 @@ const Detail = () => {
       },
     },
     {
-      disable: true,
       title: '状态',
       dataIndex: 'state',
       ellipsis: true,
@@ -146,21 +159,21 @@ const Detail = () => {
       },
     },
     {
-      disable: true,
       title: '标签',
       dataIndex: 'labels',
       valueType: 'select',
       fieldProps: {
+        // mode: 'multiple',
         options: IssueLabelsOptions,
-        onChange: (value) => {
-          // TODO: 如何设置 value 到 form 里面去
-          console.warn('labels onChange ======>', value);
-        },
+        // onChange: (value) => {
+        // TODO: 如何设置 value 到 form 里面去
+        //   console.warn('labels onChange ======>', value);
+        // },
       },
       render: (_, record) => {
         return (
           <Space>
-            {record?.labels?.map((item) => (
+            {record?.labels?.map?.((item) => (
               <Tag color={item.color} key={item.name}>
                 {item.name}
               </Tag>
@@ -171,26 +184,11 @@ const Detail = () => {
     },
     {
       title: '创建时间',
-      key: 'showTime',
+      // key: 'showTime',
+      key: 'created_at',
       dataIndex: 'created_at',
       valueType: 'date',
-      // sorter: true,
-      // search: false,
     },
-    // {
-    //   title: '创建时间',
-    //   dataIndex: 'created_at',
-    //   // valueType: 'dateRange',
-    //   // hideInTable: true,
-    //   // search: {
-    //   //   transform: (value) => {
-    //   //     return {
-    //   //       startTime: value[0],
-    //   //       endTime: value[1],
-    //   //     };
-    //   //   },
-    //   // },
-    // },
     {
       title: '操作',
       dataIndex: 'option',
@@ -341,6 +339,34 @@ const Detail = () => {
           </ProForm>
         </ProCard>
         <ProCard title='详情' bordered={false} headerBordered>
+          <Space>
+            <Button
+              type='primary'
+              onClick={() => {
+                // actionRef.current?.addEditRecord?.({
+                //   id: (Math.random() * 1000000).toFixed,
+                //   title: '新的一行',
+                // });
+                const row = { id: (Math.random() * 1000000).toFixed(0), title: '新的一行' };
+                setTotalIssues([...totalIssues, row]);
+                actionRef.current?.startEditable?.(row.id);
+              }}
+              icon={<PlusOutlined />}
+            >
+              新建
+            </Button>
+            <Button
+              danger
+              disabled={selectedRowKeys.length === 0}
+              icon={<DeleteOutlined />}
+              onClick={() => {
+                setTotalIssues(totalIssues.filter((item) => !selectedRowKeys.includes(item.id)));
+                actionRef.current?.clearSelected?.();
+              }}
+            >
+              批量删除
+            </Button>
+          </Space>
           <EditableProTable<GithubIssueItem>
             // name='table' // 若设置了name该选项，必须要用 ProForm 包裹 EditableProTable 组件
             rowKey='id'
@@ -353,9 +379,12 @@ const Detail = () => {
             // recordCreatorProps={{ record: (index) => ({ id: `${index + 1}` }) }}
             value={totalIssues}
             pagination={false}
-            onChange={(value) => {
-              console.log(value, ' EditableProTable onChange =====>');
-            }}
+            // onChange={(value) => {
+            //   console.log(value, ' EditableProTable onChange =====>');
+            // }}
+            rowSelection={rowSelection}
+            // 关闭默认的新建按钮
+            recordCreatorProps={false}
             editable={{
               form: editableForm, // form实例，方便编辑表格外面操作
               type: 'multiple',
@@ -363,12 +392,13 @@ const Detail = () => {
               onChange: setEditableRowKeys,
               onSave: async (key, row) => {
                 console.log(key, row, 'onSave =====>');
-                debugger;
                 await waitTime(500);
                 const newData = [...totalIssues];
                 const index = newData.findIndex((item) => key === item.id);
                 if (index > -1) {
                   const item = newData[index];
+                  // const labelsValue = (row.labels as Labels[])?.map?.((item) => item?.value || item.name || item);
+                  // const labelsOption = LabelsApiMapOptions.filter((item) => labelsValue?.includes?.(item.name));
                   newData.splice(index, 1, {
                     ...item,
                     ...row,
