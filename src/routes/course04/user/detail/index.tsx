@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 import type { ActionType, ProFormInstance, ProColumns } from '@ant-design/pro-components';
 import {
+  FooterToolbar,
   ProCard,
   ProForm,
   ProFormText,
@@ -267,7 +268,7 @@ const Detail = () => {
               return data;
             }}
           >
-            <ProFormTextArea name='title' label='标题' colProps={{ span: 24 }} />
+            <ProFormTextArea name='title' label='标题' colProps={{ span: 24 }} rules={[{ required: true }]} />
             <ProFormSelect
               name='state'
               label='状态'
@@ -409,6 +410,28 @@ const Detail = () => {
             }}
           />
         </ProCard>
+        <FooterToolbar>
+          <Space>
+            <Button
+              type='primary'
+              onClick={async () => {
+                formRef.current?.validateFields().then((values) => {
+                  console.log(values, 'values =====>');
+                  const baseFormData = values;
+                  const tableData = totalIssues;
+                  const params = {
+                    baseFormData,
+                    tableData,
+                  };
+                  console.log(params, 'params =====>');
+                });
+              }}
+            >
+              提交
+            </Button>
+            <Button>重置</Button>
+          </Space>
+        </FooterToolbar>
       </div>
     </ProCard>
   );
