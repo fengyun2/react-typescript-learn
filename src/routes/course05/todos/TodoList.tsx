@@ -50,7 +50,7 @@ function TodoList() {
   return (
     <Flex justify='center' align='center' vertical>
       <Space style={{ display: 'flex', alignItems: 'center' }}>
-        <Input value={newItem} onChange={onTodoChange} />
+        <Input value={newItem} onChange={onTodoChange} onPressEnter={onAddTodo} />
         <Button type='primary' disabled={!newItem} onClick={onAddTodo}>
           Add
         </Button>

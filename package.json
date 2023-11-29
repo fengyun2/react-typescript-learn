@@ -17,6 +17,7 @@
     "ahooks": "^3.7.8",
     "antd": "^5.11.3",
     "dayjs": "^1.11.10",
+    "immer": "^10.0.3",
     "localforage": "^1.10.0",
     "lodash-es": "^4.17.21",
     "match-sorter": "^6.3.1",
