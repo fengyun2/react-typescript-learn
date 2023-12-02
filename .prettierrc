@@ -9,5 +9,5 @@
   "endOfLine": "auto",
   "proseWrap": "preserve",
   "htmlWhitespaceSensitivity": "css",
-  "plugins": []
+  "plugins": ["prettier-plugin-tailwindcss"]
 }
